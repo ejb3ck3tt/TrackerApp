@@ -8,13 +8,15 @@ import Navbar from './components/Navbar'
 export default function App() {
   return (
     <>
-      <Navbar />
-      <Routes>
-        <Route path="/" element={<ExerciseList />}></Route>
-        <Route path="/edit/:id" element={<EditExercise />}></Route>
-        <Route path="/create" element={<CreateExercise />}></Route>
-        <Route path="/user" element={<CreateUser />}></Route>
-      </Routes>
+      <div className="container">
+        <Navbar />
+        <Routes>
+          <Route path="/" element={<ExerciseList />}></Route>
+          <Route path="/edit/:id" element={<EditExercise />}></Route>
+          <Route path="/create" element={<CreateExercise />}></Route>
+          <Route path="/user" element={<CreateUser />}></Route>
+        </Routes>
+      </div>
     </>
   )
 }

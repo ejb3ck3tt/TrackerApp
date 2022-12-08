@@ -4,7 +4,7 @@ import { Outlet, Link } from 'react-router-dom'
 const Navbar = () => {
   return (
     <>
-      <Nav className="navbar navbar-dark bg-dark navbar-expand-lg">
+      <Nav className="navbar navbar-dark bg-dark navbar-expand-lg p-2">
         <Link to="/" className="navbar-brand">
           ExcerTracker
         </Link>

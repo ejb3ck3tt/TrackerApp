@@ -3,7 +3,7 @@
 const ExerciseList = () => {
   return (
     <>
-      <h1>execise list</h1>
+      <h1>You're on the exercise list component</h1>
     </>
   )
 }
