@@ -1,44 +1,51 @@
-import React, { Component } from 'react'
-// import { Outlet } from 'react-router-dom'
+import React, { Component } from "react";
+import axios from "axios";
 
 export default class CreateUser extends Component {
   constructor(props) {
-    super(props)
+    super(props);
 
-    this.onChangeUsername = this.onChangeUsername.bind(this)
-
-    this.onSubmit = this.onSubmit.bind(this)
+    this.onChangeUsername = this.onChangeUsername.bind(this);
+    this.onSubmit = this.onSubmit.bind(this);
 
     this.state = {
-      username: '',
-    }
+      username: "",
+    };
   }
+
   onChangeUsername(e) {
     this.setState({
       username: e.target.value,
-    })
+    });
   }
 
   onSubmit(e) {
-    e.preventDefault()
+    e.preventDefault();
 
     const user = {
       username: this.state.username,
-    }
-    console.log(user)
+    };
+
+    console.log(user);
+
+    axios
+      .post("http://localhost:5000/users/add", user)
+      .then((res) => console.log(res.data));
 
     this.setState({
-      username: '',
-    })
+      username: "",
+    });
+
+    window.location = "/";
   }
 
   render() {
     return (
       <div>
+        <h3>Create New User</h3>
         <form onSubmit={this.onSubmit}>
-          <br />
           <div className="form-group">
-            <label>Username:</label>
+            <label>Username: </label>
             <input
               type="text"
               required
@@ -47,8 +54,7 @@ export default class CreateUser extends Component {
               onChange={this.onChangeUsername}
             />
           </div>
-          <div className="fom-group">
-            <br />
+          <div className="form-group">
             <input
               type="submit"
               value="Create User"
@@ -57,6 +63,6 @@ export default class CreateUser extends Component {
           </div>
         </form>
       </div>
-    )
+    );
   }
 }
