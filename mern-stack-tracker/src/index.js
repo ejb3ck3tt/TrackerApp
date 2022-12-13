@@ -11,6 +11,7 @@ import CreateExercise from "./components/CreateExercise";
 import Navbar from "./components/Navbar";
 import EditExercise from "./components/EditExercise";
 import ExercisesList from "./components/ExcerciseList";
+import "./css/index.css";
 
 export default function App() {
   return (
