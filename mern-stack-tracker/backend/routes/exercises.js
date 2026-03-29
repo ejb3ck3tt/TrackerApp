@@ -26,9 +26,15 @@ router.route("/add").post((req, res) => {
     .catch((err) => res.status(400).json("Error: " + err));
 });
 
-router.route("edit/:id").get((req, res) => {
+// Get a single exercise by id
+router.route("/:id").get((req, res) => {
   Exercise.findById(req.params.id)
-    .then((exercise) => res.json(exercise))
+    .then((exercise) => {
+      if (!exercise) {
+        return res.status(404).json("Error: Exercise not found");
+      }
+      res.json(exercise);
+    })
     .catch((err) => res.status(400).json("Error: " + err));
 });
 

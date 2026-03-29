@@ -1,70 +1,101 @@
-# Getting Started with Create React App
+# MERN Tracker App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A simple MERN stack exercise tracker that supports creating users, logging exercises, editing logs, and deleting records.
 
-## Available Scripts
+## Overview
 
-In the project directory, you can run:
+- Frontend: React (class and hooks components), React Router v6, Bootstrap, axios, react-datepicker.
+- Backend: Node.js, Express, MongoDB with Mongoose, dotenv, CORS.
+- Persistence: MongoDB Atlas (env connection string `ATLAS_URI`).
 
-### `npm start`
+## Features
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+- List all exercises (`GET /exercises`)
+- Create exercise (`POST /exercises/add`)
+- Get a single exercise (`GET /exercises/:id`)
+- Update exercise (`POST /exercises/update/:id`)
+- Delete exercise (`DELETE /exercises/:id`)
+- List users (`GET /users`)
+- Create user (`POST /users/add`)
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+UI routes:
 
-### `npm test`
+- `/` exercise list
+- `/create` create new exercise
+- `/edit/:id` edit existing exercise
+- `/user` create user
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+## Project structure
 
-### `npm run build`
+- `backend/`
+  - `server.js` - express app and Slack
+  - `models/user.model.js` and `exercise.model.js`
+  - `routes/users.js`, `routes/exercises.js`
+- `src/`
+  - `index.js` - React entry + Router
+  - `components/` forms and list
+  - `css/index.css` styling
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Setup
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Prerequisites
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Node.js >= 16
+- npm
+- MongoDB Atlas account or local MongoDB instance
 
-### `npm run eject`
+### Backend install
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+```bash
+cd mern-stack-tracker/backend
+npm install
+```
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### Frontend install
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+```bash
+cd ../
+npm install
+```
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+### Environment
 
-## Learn More
+Create `backend/.env`:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```env
+ATLAS_URI="mongodb+srv://<user>:<pass>@cluster0.xyz.mongodb.net/tracker?retryWrites=true&w=majority"
+PORT=5000
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+### Run
 
-### Code Splitting
+```bash
+cd mern-stack-tracker/backend && npm start
+cd ../ && npm start
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+Open [http://localhost:3000](http://localhost:3000).
 
-### Analyzing the Bundle Size
+## Improvements applied
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+- fixed backend route for exercise retrieval, now `GET /exercises/:id` works
+- changed exercise model name from `Excercise` to `Exercise`
+- updated edit page to use route param (`/edit/:id`) rather than hard-coded id
+- added loading, error, empty states in exercise list and edit form
+- added delete confirmation and error handling
+- removed outdated `exact` usage in React Router v6
 
-### Making a Progressive Web App
+## Notes
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- For list editing, use the _Edit_ link from the exercise table.
+- If no users exist, use `/user` to create one before creating an exercise.
+- Existing dropdown values are loaded from users API in `CreateExercise`.
 
-### Advanced Configuration
+## Scripts
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- `npm start` start client
+- `npm run build` build client
+- `npm test` run tests (default create-react-app)
 
-### Deployment
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+Feel free to customize this README for your repo presentation or CI/CD docs.

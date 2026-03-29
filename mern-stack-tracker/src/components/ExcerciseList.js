@@ -29,28 +29,36 @@ export default class ExercisesList extends Component {
 
     this.deleteExercise = this.deleteExercise.bind(this);
 
-    this.state = { exercises: [] };
+    this.state = { exercises: [], loading: true, error: "" };
   }
 
   componentDidMount() {
     axios
       .get("http://localhost:5000/exercises/")
       .then((response) => {
-        this.setState({ exercises: response.data });
+        this.setState({ exercises: response.data, loading: false });
       })
       .catch((error) => {
-        console.log(error);
+        console.error(error);
+        this.setState({ loading: false, error: "Failed to load exercises" });
       });
   }
 
   deleteExercise(id) {
-    axios.delete("http://localhost:5000/exercises/" + id).then((response) => {
-      console.log(response.data);
-    });
+    if (!window.confirm("Delete this exercise?")) return;
 
-    this.setState({
-      exercises: this.state.exercises.filter((el) => el._id !== id),
-    });
+    axios
+      .delete("http://localhost:5000/exercises/" + id)
+      .then((response) => {
+        console.log(response.data);
+        this.setState({
+          exercises: this.state.exercises.filter((el) => el._id !== id),
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        this.setState({ error: "Failed to delete exercise." });
+      });
   }
 
   exerciseList() {
@@ -66,21 +74,30 @@ export default class ExercisesList extends Component {
   }
 
   render() {
+    const { exercises, loading, error } = this.state;
+
+    if (loading) return <div>Loading exercises...</div>;
+    if (error) return <div className="alert alert-danger">{error}</div>;
+
     return (
       <div>
         <h3>Logged Exercises</h3>
-        <table className="table">
-          <thead className="thead-light">
-            <tr>
-              <th>Username</th>
-              <th>Description</th>
-              <th>Duration</th>
-              <th>Date</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody>{this.exerciseList()}</tbody>
-        </table>
+        {exercises.length === 0 ? (
+          <div className="alert alert-info">No exercises found. Please add one.</div>
+        ) : (
+          <table className="table">
+            <thead className="thead-light">
+              <tr>
+                <th>Username</th>
+                <th>Description</th>
+                <th>Duration</th>
+                <th>Date</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody>{this.exerciseList()}</tbody>
+          </table>
+        )}
       </div>
     );
   }

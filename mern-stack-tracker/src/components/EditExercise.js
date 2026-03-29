@@ -1,171 +1,126 @@
-import React, { Component } from "react";
+import React, { useState, useEffect } from "react";
+import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-class EditExercise extends Component {
-  constructor(props) {
-    super(props);
+const API_BASE = "http://localhost:5000";
 
-    this.textInput = null;
-    this.setTextInputRef = (element) => {
-      this.textInput = element;
+const EditExercise = () => {
+  const { id } = useParams();
+  const navigate = useNavigate();
+
+  const [username, setUsername] = useState("");
+  const [description, setDescription] = useState("");
+  const [duration, setDuration] = useState(0);
+  const [date, setDate] = useState(new Date());
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const load = async () => {
+      try {
+        const [exerciseRes, usersRes] = await Promise.all([
+          axios.get(`${API_BASE}/exercises/${id}`),
+          axios.get(`${API_BASE}/users`),
+        ]);
+
+        const exercise = exerciseRes.data;
+        setUsername(exercise.username);
+        setDescription(exercise.description);
+        setDuration(exercise.duration);
+        setDate(new Date(exercise.date));
+
+        setUsers(usersRes.data.map((user) => user.username));
+      } catch (err) {
+        setError("Failed to load exercise or users");
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
     };
+    load();
+  }, [id]);
 
-    this.onChangeUsername = this.onChangeUsername.bind(this);
-    this.onChangeDescription = this.onChangeDescription.bind(this);
-    this.onChangeDuration = this.onChangeDuration.bind(this);
-    this.onChangeDate = this.onChangeDate.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-
-    this.state = {
-      username: "",
-      description: "",
-      duration: 0,
-      date: new Date(),
-      users: [],
-    };
-  }
-
-  componentDidMount() {
-    axios
-      .get(`http://localhost:5000/exercises/639733384ca377bb8a9ee4f0`)
-      .then((response) => {
-        // console.log(response.data._id);
-        this.setState({
-          username: response.data.username,
-          description: response.data.description,
-          duration: response.data.duration,
-          date: new Date(response.data.date),
-        });
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-
-    axios
-      .get("http://localhost:5000/users/")
-      .then((response) => {
-        if (response.data.length > 0) {
-          this.setState({
-            users: response.data.map((user) => user.username),
-          });
-        }
-      })
-      .catch((error) => {
-        console.log(error);
-      });
-  }
-
-  onChangeUsername(e) {
-    this.setState({
-      username: e.target.value,
-    });
-  }
-
-  onChangeDescription(e) {
-    this.setState({
-      description: e.target.value,
-    });
-  }
-
-  onChangeDuration(e) {
-    this.setState({
-      duration: e.target.value,
-    });
-  }
-
-  onChangeDate(date) {
-    this.setState({
-      date: date,
-    });
-  }
-
-  onSubmit(e) {
+  const onSubmit = async (e) => {
     e.preventDefault();
+    if (!username || !description || duration <= 0) {
+      setError("Username, description, and duration must be valid");
+      return;
+    }
 
-    const exercise = {
-      username: this.state.username,
-      description: this.state.description,
-      duration: this.state.duration,
-      date: this.state.date,
-    };
+    const exercise = { username, description, duration, date };
 
-    console.log(exercise);
+    try {
+      await axios.post(`${API_BASE}/exercises/update/${id}`, exercise);
+      navigate("/");
+    } catch (err) {
+      setError("Failed to update exercise");
+      console.error(err);
+    }
+  };
 
-    axios
-      .post(
-        "http://localhost:5000/exercises/update/639733384ca377bb8a9ee4f0",
-        exercise
-      )
-      .then((res) => console.log(res.data));
+  if (loading) return <div>Loading exercise...</div>;
+  if (error) return <div className="alert alert-danger">{error}</div>;
 
-    window.location = "/";
-  }
-
-  render() {
-    return (
-      <div>
-        <h3>Edit New Exercise Log</h3>
-        <form onSubmit={this.onSubmit}>
-          <div className="form-group">
-            <label>Username: </label>
-            <select
-              ref={this.setTextInputRef}
-              required
-              className="form-control"
-              value={this.state.username}
-              onChange={this.onChangeUsername}
-            >
-              {this.state.users.map(function (user) {
-                return (
-                  <option key={user} value={user}>
-                    {user}
-                  </option>
-                );
-              })}
-            </select>
+  return (
+    <div className="forms">
+      <h3>Edit Exercise Log</h3>
+      <form onSubmit={onSubmit}>
+        <div className="form-group">
+          <label>Username: </label>
+          <select
+            required
+            className="form-control"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          >
+            {users.map((user) => (
+              <option key={user} value={user}>
+                {user}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div className="form-group">
+          <label>Description: </label>
+          <input
+            type="text"
+            required
+            className="form-control"
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <label>Duration (in minutes): </label>
+          <input
+            type="number"
+            min="1"
+            required
+            className="form-control"
+            value={duration}
+            onChange={(e) => setDuration(Number(e.target.value))}
+          />
+        </div>
+        <div className="form-group">
+          <label>Date: </label>
+          <div>
+            <DatePicker selected={date} onChange={(value) => setDate(value)} />
           </div>
-          <div className="form-group">
-            <label>Description: </label>
-            <input
-              type="text"
-              required
-              className="form-control"
-              value={this.state.description || ""}
-              onChange={this.onChangeDescription}
-            />
-          </div>
-          <div className="form-group">
-            <label>Duration (in minutes): </label>
-            <input
-              type="text"
-              className="form-control"
-              value={this.state.duration || ""}
-              onChange={this.onChangeDuration}
-            />
-          </div>
-          <div className="form-group">
-            <label>Date: </label>
-            <div>
-              <DatePicker
-                selected={this.state.date}
-                onChange={this.onChangeDate}
-              />
-            </div>
-          </div>
+        </div>
 
-          <div className="form-group">
-            <input
-              type="submit"
-              value="Edit Exercise Log"
-              className="btn btn-primary"
-            />
-          </div>
-        </form>
-      </div>
-    );
-  }
-}
+        <div className="form-group form-btn">
+          <input
+            type="submit"
+            value="Update Exercise Log"
+            className="btn btn-primary"
+          />
+        </div>
+      </form>
+    </div>
+  );
+};
 
 export default EditExercise;
