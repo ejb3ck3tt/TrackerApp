@@ -34,7 +34,7 @@ export default class ExercisesList extends Component {
 
   componentDidMount() {
     axios
-      .get("http://localhost:5000/exercises/")
+      .get("/exercises/")
       .then((response) => {
         this.setState({ exercises: response.data, loading: false });
       })
@@ -48,7 +48,7 @@ export default class ExercisesList extends Component {
     if (!window.confirm("Delete this exercise?")) return;
 
     axios
-      .delete("http://localhost:5000/exercises/" + id)
+      .delete("/exercises/" + id)
       .then((response) => {
         console.log(response.data);
         this.setState({
@@ -83,7 +83,9 @@ export default class ExercisesList extends Component {
       <div>
         <h3>Logged Exercises</h3>
         {exercises.length === 0 ? (
-          <div className="alert alert-info">No exercises found. Please add one.</div>
+          <div className="alert alert-info">
+            No exercises found. Please add one.
+          </div>
         ) : (
           <table className="table">
             <thead className="thead-light">

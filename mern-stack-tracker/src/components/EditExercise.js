@@ -4,8 +4,6 @@ import axios from "axios";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 
-const API_BASE = "http://localhost:5000";
-
 const EditExercise = () => {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -22,8 +20,8 @@ const EditExercise = () => {
     const load = async () => {
       try {
         const [exerciseRes, usersRes] = await Promise.all([
-          axios.get(`${API_BASE}/exercises/${id}`),
-          axios.get(`${API_BASE}/users`),
+          axios.get(`/exercises/${id}`),
+          axios.get(`/users`),
         ]);
 
         const exercise = exerciseRes.data;
@@ -50,10 +48,10 @@ const EditExercise = () => {
       return;
     }
 
-    const exercise = { username, description, duration, date };
+    const exercise = { username, description, duration, date: date.toISOString() };
 
     try {
-      await axios.post(`${API_BASE}/exercises/update/${id}`, exercise);
+      await axios.post(`/exercises/update/${id}`, exercise);
       navigate("/");
     } catch (err) {
       setError("Failed to update exercise");

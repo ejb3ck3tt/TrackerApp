@@ -1,6 +1,6 @@
-const mongoose = require('mongoose')
+const mongoose = require("mongoose");
 
-const Schema = mongoose.Schema
+const Schema = mongoose.Schema;
 
 const exerciseSchema = new Schema(
   {
@@ -12,8 +12,8 @@ const exerciseSchema = new Schema(
   {
     timestamps: true,
   },
-)
+);
 
-const Exercise = mongoose.model('Exercise', exerciseSchema)
+const Exercise = mongoose.model("Exercise", exerciseSchema);
 
-module.exports = Exercise
+module.exports = Exercise;

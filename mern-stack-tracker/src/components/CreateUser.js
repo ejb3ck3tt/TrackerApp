@@ -1,68 +1,55 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
-export default class CreateUser extends Component {
-  constructor(props) {
-    super(props);
+const CreateUser = () => {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
-    this.onChangeUsername = this.onChangeUsername.bind(this);
-    this.onSubmit = this.onSubmit.bind(this);
-
-    this.state = {
-      username: "",
-    };
-  }
-
-  onChangeUsername(e) {
-    this.setState({
-      username: e.target.value,
-    });
-  }
-
-  onSubmit(e) {
+  const onSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
+    setError("");
 
-    const user = {
-      username: this.state.username,
-    };
+    try {
+      await axios.post("/users/add", { username });
+      navigate("/");
+    } catch (err) {
+      setError("Failed to create user. Please try again.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-    console.log(user);
+  return (
+    <div className="forms">
+      <h3>Create New User</h3>
+      {error && <div className="alert alert-danger">{error}</div>}
+      <form onSubmit={onSubmit}>
+        <div className="form-group mb-3">
+          <label>Username: </label>
+          <input
+            type="text"
+            required
+            className="form-control"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+          />
+        </div>
+        <div className="form-group">
+          <input
+            type="submit"
+            value={loading ? "Creating..." : "Create User"}
+            disabled={loading}
+            className="btn btn-primary"
+          />
+        </div>
+      </form>
+    </div>
+  );
+};
 
-    axios
-      .post("http://localhost:5000/users/add", user)
-      .then((res) => console.log(res.data));
-
-    this.setState({
-      username: "",
-    });
-
-    window.location = "/";
-  }
-
-  render() {
-    return (
-      <div className="forms">
-        <h3>Create New User</h3>
-        <form onSubmit={this.onSubmit}>
-          <div className="form-group mb-3">
-            <label>Username: </label>
-            <input
-              type="text"
-              required
-              className="form-control"
-              value={this.state.username}
-              onChange={this.onChangeUsername}
-            />
-          </div>
-          <div className="form-group">
-            <input
-              type="submit"
-              value="Create User"
-              className="btn btn-primary"
-            />
-          </div>
-        </form>
-      </div>
-    );
-  }
-}
+export default CreateUser;

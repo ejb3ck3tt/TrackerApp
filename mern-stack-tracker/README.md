@@ -97,5 +97,4 @@ Open [http://localhost:3000](http://localhost:3000).
 - `npm run build` build client
 - `npm test` run tests (default create-react-app)
 
-
 Feel free to customize this README for your repo presentation or CI/CD docs.
